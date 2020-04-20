@@ -10,3 +10,4 @@ extern IDirect3DDevice9Ex* g_pD3D9DeviceEx;
 void InitDevice(HWND hWnd);
 void Render();
 void UnInitDevice();
+void OnPrePresent();

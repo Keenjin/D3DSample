@@ -107,28 +107,7 @@ void Render()
 			g_pD3D9DeviceEx->EndScene();
 		}
 
-		//
-		//
-
-		//static bool bFirst = true;
-
-		//if (bFirst)
-		//{
-		//	bFirst = false;
-		//	// Present之前，创建一个兼容的离屏表面
-		//	IDirect3DSurface9* pBackBuffer = NULL;
-		//	g_pD3D9DeviceEx->GetRenderTarget(0, &pBackBuffer);
-
-		//	D3DSURFACE_DESC desc;
-		//	pBackBuffer->GetDesc(&desc);
-		//	IDirect3DSurface9* pCopyBuffer = NULL;
-		//	g_pD3D9DeviceEx->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &pCopyBuffer, NULL);
-		//	//g_pD3D9DeviceEx->StretchRect(pBackBuffer, NULL, pCopyBuffer, NULL, D3DTEXTUREFILTERTYPE::D3DTEXF_NONE);
-		//	g_pD3D9DeviceEx->GetRenderTargetData(pBackBuffer, pCopyBuffer);
-		//	D3DXSaveSurfaceToFileW(L"d:\\test1.bmp", D3DXIMAGE_FILEFORMAT::D3DXIFF_BMP, pCopyBuffer, NULL, NULL);
-		//	pCopyBuffer->Release();
-		//	pBackBuffer->Release();
-		//}
+		OnPrePresent();
 
 		g_pD3D9DeviceEx->PresentEx(0, 0, 0, 0, 0);
 	}
@@ -152,91 +131,26 @@ void UnInitDevice()
 	}
 }
 
-void SaveBitmapToFile(HBITMAP hBitMap, LPCWSTR lpstrFileName)
+void OnPrePresent()
 {
-	BITMAP bitmap;
-	GetObject(hBitMap, sizeof(BITMAP), &bitmap);
+	static bool bFirst = true;
 
-	BITMAPFILEHEADER       bmfHdr;           //位图文件头结构
-	BITMAPINFOHEADER       bi;               //位图信息头结构
-	LPBITMAPINFOHEADER   lpbi;               //指向位图信息头结构
-
-	bi.biSize = sizeof(BITMAPINFOHEADER);
-	bi.biWidth = bitmap.bmWidth;
-	bi.biHeight = bitmap.bmHeight;
-	bi.biPlanes = 1;
-	HDC hDC = CreateDC(L"DISPLAY ", NULL, NULL, NULL);
-	int iBits = GetDeviceCaps(hDC, BITSPIXEL) * GetDeviceCaps(hDC, PLANES);
-	DeleteDC(hDC);
-	if (iBits <= 1)
-		bi.biBitCount = 1;
-	else   if (iBits <= 4)
-		bi.biBitCount = 4;
-	else   if (iBits <= 8)
-		bi.biBitCount = 8;
-	else   if (iBits <= 24)
-		bi.biBitCount = 24;
-	bi.biCompression = BI_RGB;
-	bi.biSizeImage = 0;
-	bi.biXPelsPerMeter = 0;
-	bi.biYPelsPerMeter = 0;
-	bi.biClrUsed = 0;
-	bi.biClrImportant = 0;
-
-	DWORD dwBmBitsSize = ((bitmap.bmWidth *
-		bi.biBitCount + 31) / 32) * 4
-		* bitmap.bmHeight;
-
-	//计算调色板大小
-	DWORD dwPaletteSize = 0;
-	if (bi.biBitCount <= 8)
-		dwPaletteSize = (1 << bi.biBitCount) * sizeof(RGBQUAD);
-
-	//   设置位图文件头
-	bmfHdr.bfType = 0x4D42;     //   "BM "
-	DWORD dwDIBSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER)
-		+ dwPaletteSize + dwBmBitsSize;
-	bmfHdr.bfSize = dwDIBSize;
-	bmfHdr.bfReserved1 = 0;
-	bmfHdr.bfReserved2 = 0;
-	bmfHdr.bfOffBits = (DWORD)sizeof(BITMAPFILEHEADER)
-		+ (DWORD)sizeof(BITMAPINFOHEADER)
-		+ dwPaletteSize;
-
-	//为位图内容分配内存
-	HANDLE hDib = GlobalAlloc(GHND, dwBmBitsSize +
-		dwPaletteSize + sizeof(BITMAPINFOHEADER));
-	lpbi = (LPBITMAPINFOHEADER)GlobalLock(hDib);
-	*lpbi = bi;
-	//   处理调色板      
-	HPALETTE hPal = (HPALETTE)GetStockObject(DEFAULT_PALETTE);
-	HPALETTE hOldPal = NULL;
-	if (hPal)
+	if (bFirst)
 	{
-		hDC = GetDC(NULL);
-		hOldPal = SelectPalette(hDC, hPal, FALSE);
-		RealizePalette(hDC);
-	}
-	//   获取该调色板下新的像素值
-	GetDIBits(hDC, hBitMap, 0, (UINT)bitmap.bmHeight,
-		(LPSTR)lpbi + sizeof(BITMAPINFOHEADER) + dwPaletteSize, (LPBITMAPINFO)lpbi, DIB_RGB_COLORS);
-	//恢复调色板      
-	if (hOldPal)
-	{
-		SelectPalette(hDC, hOldPal, TRUE);
-		RealizePalette(hDC);
-		ReleaseDC(NULL, hDC);
-	}
+		bFirst = false;
+		// Present之前，创建一个兼容的离屏表面
+		IDirect3DSurface9* pBackBuffer = NULL;
+		g_pD3D9DeviceEx->GetRenderTarget(0, &pBackBuffer);
 
-	HANDLE hFile = CreateFile(lpstrFileName, GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
-
-	//   写入位图文件头
-	DWORD dwWritten = 0;
-	WriteFile(hFile, (LPSTR)&bmfHdr, sizeof(BITMAPFILEHEADER), &dwWritten, NULL);
-	//   写入位图文件其余内容
-	WriteFile(hFile, (LPSTR)lpbi, dwDIBSize, &dwWritten, NULL);
-	GlobalUnlock(hDib);
-	GlobalFree(hDib);
-	CloseHandle(hFile);
+		D3DSURFACE_DESC desc;
+		pBackBuffer->GetDesc(&desc);
+		IDirect3DSurface9* pCopyBuffer = NULL;
+		g_pD3D9DeviceEx->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &pCopyBuffer, NULL);
+		pCopyBuffer->UnlockRect();
+		//g_pD3D9DeviceEx->StretchRect(pBackBuffer, NULL, pCopyBuffer, NULL, D3DTEXTUREFILTERTYPE::D3DTEXF_NONE);
+		g_pD3D9DeviceEx->GetRenderTargetData(pBackBuffer, pCopyBuffer);
+		D3DXSaveSurfaceToFileW(L"d:\\d3d9.bmp", D3DXIMAGE_FILEFORMAT::D3DXIFF_BMP, pCopyBuffer, NULL, NULL);
+		pCopyBuffer->Release();
+		pBackBuffer->Release();
+	}
 }
-

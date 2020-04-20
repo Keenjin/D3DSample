@@ -6,3 +6,5 @@
 void InitDevice(HWND hWnd);
 void Render();
 void UnInitDevice();
+void OnPrePresent();
+void SaveSurfaceToFile(IDirect3DSurface8* pCopyBuffer, LPCWSTR lpstrFileName);

@@ -125,6 +125,8 @@ void Render()
         // Render a triangle
         g_pd3dDevice->Draw(3, 0);
 
+        OnPrePresent();
+
         g_pSwapChain->Present(0, 0);
     }
 
@@ -138,4 +140,40 @@ void UnInitDevice()
     if (g_pRenderTargetView) g_pRenderTargetView->Release();
     if (g_pd3dDevice) g_pd3dDevice->Release();
     if (g_pSwapChain) g_pSwapChain->Release();
+}
+
+void OnPrePresent()
+{
+    static bool bFirst = true;
+
+    if (bFirst)
+    {
+        bFirst = false;
+        // 获取后备缓存
+        ID3D10Resource* pBackBuffer = NULL;
+        g_pSwapChain->GetBuffer(0, __uuidof(ID3D10Resource), (void**)&pBackBuffer);
+        DXGI_SWAP_CHAIN_DESC swapdesc;
+        g_pSwapChain->GetDesc(&swapdesc);
+
+
+        // 创建一个CPU和GPU皆能访问的texture2D资源
+        D3D10_TEXTURE2D_DESC desc = {};
+        desc.Width = swapdesc.BufferDesc.Width;
+        desc.Height = swapdesc.BufferDesc.Height;
+        desc.Format = swapdesc.BufferDesc.Format;
+        desc.MipLevels = 1;
+        desc.ArraySize = 1;
+        desc.SampleDesc.Count = 1;
+        desc.Usage = D3D10_USAGE_STAGING;
+        desc.CPUAccessFlags = D3D10_CPU_ACCESS_READ;
+
+        ID3D10Texture2D* tex = NULL;
+        g_pd3dDevice->CreateTexture2D(&desc, nullptr, &tex);
+        g_pd3dDevice->CopyResource(tex, pBackBuffer);
+
+        D3DX10SaveTextureToFile(tex, D3DX10_IMAGE_FILE_FORMAT::D3DX10_IFF_BMP, L"D:\\d3d10.bmp");
+
+        if (pBackBuffer) pBackBuffer->Release();
+        if (tex) tex->Release();
+    }
 }

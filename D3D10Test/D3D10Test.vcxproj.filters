@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="d3dx10api">
+      <UniqueIdentifier>{e27bda67-1fd9-4261-94ff-fe0d1191a991}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -30,8 +33,23 @@
     <ClInclude Include="d3drender.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="d3dx10.h">
-      <Filter>源文件</Filter>
+    <ClInclude Include="d3d10-api\D3DX10.h">
+      <Filter>d3dx10api</Filter>
+    </ClInclude>
+    <ClInclude Include="d3d10-api\d3dx10async.h">
+      <Filter>d3dx10api</Filter>
+    </ClInclude>
+    <ClInclude Include="d3d10-api\D3DX10core.h">
+      <Filter>d3dx10api</Filter>
+    </ClInclude>
+    <ClInclude Include="d3d10-api\D3DX10math.h">
+      <Filter>d3dx10api</Filter>
+    </ClInclude>
+    <ClInclude Include="d3d10-api\D3DX10mesh.h">
+      <Filter>d3dx10api</Filter>
+    </ClInclude>
+    <ClInclude Include="d3d10-api\D3DX10tex.h">
+      <Filter>d3dx10api</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -66,6 +84,9 @@
   <ItemGroup>
     <None Include="Header.hlsli">
       <Filter>源文件</Filter>
+    </None>
+    <None Include="d3d10-api\D3DX10math.inl">
+      <Filter>d3dx10api</Filter>
     </None>
   </ItemGroup>
 </Project>

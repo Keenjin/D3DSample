@@ -4,3 +4,4 @@
 void InitDevice(HWND hWnd);
 void Render();
 void UnInitDevice();
+void OnPrePresent();

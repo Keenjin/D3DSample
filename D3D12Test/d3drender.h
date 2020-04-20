@@ -8,3 +8,4 @@ void LoadPipeline(HWND hWnd);
 void LoadAssets();
 void WaitForPreviousFrame();
 void PopulateCommandList();
+void OnPrePresent();

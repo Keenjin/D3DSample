@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="d3dx11api">
-      <UniqueIdentifier>{9b316182-1d05-4677-8eda-f67a8479f16f}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -27,38 +24,29 @@
     <ClInclude Include="Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="D3D12Test.h">
+    <ClInclude Include="WindowsCapture.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="d3drender.h">
+    <ClInclude Include="Capture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="BitmapMemDC.h">
       <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="d3dx12.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="d3d11-api\D3DX11.h">
-      <Filter>d3dx11api</Filter>
-    </ClInclude>
-    <ClInclude Include="d3d11-api\D3DX11async.h">
-      <Filter>d3dx11api</Filter>
-    </ClInclude>
-    <ClInclude Include="d3d11-api\D3DX11core.h">
-      <Filter>d3dx11api</Filter>
-    </ClInclude>
-    <ClInclude Include="d3d11-api\D3DX11tex.h">
-      <Filter>d3dx11api</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="D3D12Test.cpp">
+    <ClCompile Include="WindowsCapture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="d3drender.cpp">
+    <ClCompile Include="Capture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapMemDC.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="D3D12Test.rc">
+    <ResourceCompile Include="WindowsCapture.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>
@@ -66,13 +54,8 @@
     <Image Include="small.ico">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="D3D12Test.ico">
+    <Image Include="WindowsCapture.ico">
       <Filter>资源文件</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="Shader.hlsl">
-      <Filter>源文件</Filter>
-    </CustomBuild>
   </ItemGroup>
 </Project>

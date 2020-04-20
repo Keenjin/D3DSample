@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="d3dx11api">
-      <UniqueIdentifier>{9b316182-1d05-4677-8eda-f67a8479f16f}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -27,38 +24,17 @@
     <ClInclude Include="Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="D3D12Test.h">
+    <ClInclude Include="WindowsProject1.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="d3drender.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="d3dx12.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="d3d11-api\D3DX11.h">
-      <Filter>d3dx11api</Filter>
-    </ClInclude>
-    <ClInclude Include="d3d11-api\D3DX11async.h">
-      <Filter>d3dx11api</Filter>
-    </ClInclude>
-    <ClInclude Include="d3d11-api\D3DX11core.h">
-      <Filter>d3dx11api</Filter>
-    </ClInclude>
-    <ClInclude Include="d3d11-api\D3DX11tex.h">
-      <Filter>d3dx11api</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="D3D12Test.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="d3drender.cpp">
+    <ClCompile Include="WindowsProject1.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="D3D12Test.rc">
+    <ResourceCompile Include="WindowsProject1.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>
@@ -66,13 +42,14 @@
     <Image Include="small.ico">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="D3D12Test.ico">
+    <Image Include="WindowsProject1.ico">
       <Filter>资源文件</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="Shader.hlsl">
-      <Filter>源文件</Filter>
-    </CustomBuild>
+    <Image Include="F:\我的资料\素材库\图片库\背景图片\简约动漫1.jpg">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="bitmap1.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

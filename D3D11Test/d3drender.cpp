@@ -2,6 +2,7 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <directxmath.h>
+#include "d3dx11.h"
 
 ID3D11Device* g_pd3dDevice = NULL;
 IDXGISwapChain* g_pSwapChain = NULL;
@@ -121,6 +122,8 @@ void Render()
         // Render a triangle
         g_pd3dImmediateContext->Draw(3, 0);
 
+        OnPrePresent();
+
         g_pSwapChain->Present(0, 0);
     }
 }
@@ -134,4 +137,40 @@ void UnInitDevice()
     if (g_pd3dDevice) g_pd3dDevice->Release();
     if (g_pd3dImmediateContext) g_pd3dImmediateContext->Release();
     if (g_pSwapChain) g_pSwapChain->Release();
+}
+
+void OnPrePresent()
+{
+    static bool bFirst = true;
+
+    if (bFirst)
+    {
+        bFirst = false;
+        // 获取后备缓存
+        ID3D11Resource* pBackBuffer = NULL;
+        g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Resource), (void**)&pBackBuffer);
+        DXGI_SWAP_CHAIN_DESC swapdesc;
+        g_pSwapChain->GetDesc(&swapdesc);
+
+
+        // 创建一个CPU和GPU皆能访问的texture2D资源
+        D3D11_TEXTURE2D_DESC desc = {};
+        desc.Width = swapdesc.BufferDesc.Width;
+        desc.Height = swapdesc.BufferDesc.Height;
+        desc.Format = swapdesc.BufferDesc.Format;
+        desc.MipLevels = 1;
+        desc.ArraySize = 1;
+        desc.SampleDesc.Count = 1;
+        desc.Usage = D3D11_USAGE_STAGING;
+        desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+
+        ID3D11Texture2D* tex = NULL;
+        g_pd3dDevice->CreateTexture2D(&desc, nullptr, &tex);
+        g_pd3dImmediateContext->CopyResource(tex, pBackBuffer);
+
+        D3DX11SaveTextureToFileW(g_pd3dImmediateContext, tex, D3DX11_IMAGE_FILE_FORMAT::D3DX11_IFF_BMP, L"D:\\d3d11.bmp");
+
+        if (pBackBuffer) pBackBuffer->Release();
+        if (tex) tex->Release();
+    }
 }
