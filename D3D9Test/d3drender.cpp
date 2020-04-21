@@ -145,10 +145,10 @@ void OnPrePresent()
 		D3DSURFACE_DESC desc;
 		pBackBuffer->GetDesc(&desc);
 		IDirect3DSurface9* pCopyBuffer = NULL;
-		g_pD3D9DeviceEx->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &pCopyBuffer, NULL);
+		g_pD3D9DeviceEx->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, D3DPOOL_DEFAULT, &pCopyBuffer, NULL);
 		pCopyBuffer->UnlockRect();
-		//g_pD3D9DeviceEx->StretchRect(pBackBuffer, NULL, pCopyBuffer, NULL, D3DTEXTUREFILTERTYPE::D3DTEXF_NONE);
-		g_pD3D9DeviceEx->GetRenderTargetData(pBackBuffer, pCopyBuffer);
+		g_pD3D9DeviceEx->StretchRect(pBackBuffer, NULL, pCopyBuffer, NULL, D3DTEXTUREFILTERTYPE::D3DTEXF_NONE);
+		//g_pD3D9DeviceEx->GetRenderTargetData(pBackBuffer, pCopyBuffer);
 		D3DXSaveSurfaceToFileW(L"d:\\d3d9.bmp", D3DXIMAGE_FILEFORMAT::D3DXIFF_BMP, pCopyBuffer, NULL, NULL);
 		pCopyBuffer->Release();
 		pBackBuffer->Release();

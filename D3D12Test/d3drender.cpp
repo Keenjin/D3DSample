@@ -390,6 +390,13 @@ void UnInitDevice()
     CloseHandle(g_hfenceEvent);
 }
 
+ComPtr<ID3D11Device> pd3d11Device;
+ComPtr<ID3D11DeviceContext> pd3d11Context;
+ComPtr<ID3D11On12Device> pd3d11On12Device;
+DXGI_SWAP_CHAIN_DESC swapdesc;
+ComPtr<ID3D11Texture2D> tex;
+ComPtr<ID3D11Resource> buffers11[8];
+
 void OnPrePresent()
 {
     static bool bFirst = true;
@@ -397,53 +404,53 @@ void OnPrePresent()
     if (bFirst)
     {
         bFirst = false;
-        DXGI_SWAP_CHAIN_DESC swapdesc;
+        
         g_pd3dSwapChain->GetDesc(&swapdesc);
 
-        ComPtr<ID3D11Device> pd3d11Device;
-        ComPtr<ID3D11DeviceContext> pd3d11Context;
+
         // d3d12需要使用d3d11on12技术，通过d3d11接口获取数据
         D3D11On12CreateDevice(g_pd3dDevice.Get(), 0, NULL, 0, NULL, 0, 0,
             &pd3d11Device, &pd3d11Context, NULL);
 
-        ComPtr<ID3D11On12Device> pd3d11On12Device;
         pd3d11Device->QueryInterface(__uuidof(ID3D11On12Device), &pd3d11On12Device);
+    }
 
-        UINT cur_idx = g_pd3dSwapChain->GetCurrentBackBufferIndex();
-        ComPtr<ID3D12Resource> backbuffer;
-        g_pd3dSwapChain->GetBuffer(cur_idx, __uuidof(ID3D12Resource),
+    D3D11_TEXTURE2D_DESC desc = {};
+    desc.Width = swapdesc.BufferDesc.Width;
+    desc.Height = swapdesc.BufferDesc.Height;
+    desc.Format = swapdesc.BufferDesc.Format;
+    desc.MipLevels = 1;
+    desc.ArraySize = 1;
+    desc.SampleDesc.Count = 1;
+    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    //desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED;
+
+    pd3d11Device->CreateTexture2D(&desc, nullptr, tex.ReleaseAndGetAddressOf());
+
+    for (size_t i = 0; i < swapdesc.BufferCount; i++)
+    {
+        ID3D12Resource* backbuffer;
+        g_pd3dSwapChain->GetBuffer(i, __uuidof(ID3D12Resource),
             (void**)&backbuffer);
-        //backbuffer->Release();
+        backbuffer->Release();
 
-        ComPtr<ID3D11Resource> backbuffer11;
         D3D11_RESOURCE_FLAGS rf11 = {};
         pd3d11On12Device->CreateWrappedResource(
-            backbuffer.Get(), &rf11,
+            backbuffer, &rf11,
             D3D12_RESOURCE_STATE_COPY_SOURCE,
             D3D12_RESOURCE_STATE_PRESENT, __uuidof(ID3D11Resource),
-            (void**)&backbuffer11);
+            (void**)&buffers11[i]);
 
-        pd3d11On12Device->ReleaseWrappedResources(backbuffer11.GetAddressOf(), 1);
-        pd3d11On12Device->AcquireWrappedResources(backbuffer11.GetAddressOf(), 1);
+        //pd3d11On12Device->ReleaseWrappedResources(buffers11[i].GetAddressOf(), 1);
+    }
+        UINT cur_idx = g_pd3dSwapChain->GetCurrentBackBufferIndex();
+        pd3d11On12Device->AcquireWrappedResources(buffers11[cur_idx].GetAddressOf(), 1);
 
-        // 创建一个CPU和GPU皆能访问的texture2D资源
-        D3D11_TEXTURE2D_DESC desc = {};
-        desc.Width = swapdesc.BufferDesc.Width;
-        desc.Height = swapdesc.BufferDesc.Height;
-        desc.Format = swapdesc.BufferDesc.Format;
-        desc.MipLevels = 1;
-        desc.ArraySize = 1;
-        desc.SampleDesc.Count = 1;
-        desc.Usage = D3D11_USAGE_STAGING;
-        desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+        if (swapdesc.SampleDesc.Count > 1) pd3d11Context->ResolveSubresource(tex.Get(), 0, buffers11[cur_idx].Get(), 0, swapdesc.BufferDesc.Format);
+        else pd3d11Context->CopyResource(tex.Get(), buffers11[cur_idx].Get());
 
-        ComPtr<ID3D11Texture2D> tex;
-        pd3d11Device->CreateTexture2D(&desc, nullptr, &tex);
-        pd3d11Context->CopyResource(tex.Get(), backbuffer11.Get());
-
-        pd3d11On12Device->ReleaseWrappedResources(backbuffer11.GetAddressOf(), 1);
+        pd3d11On12Device->ReleaseWrappedResources(buffers11[cur_idx].GetAddressOf(), 1);
         pd3d11Context->Flush();
 
-        ThrowIfFailed(D3DX11SaveTextureToFileW(pd3d11Context.Get(), tex.Get(), D3DX11_IMAGE_FILE_FORMAT::D3DX11_IFF_BMP, L"D:\\d3d12.bmp"));
-    }
+        if (tex.Get()) ThrowIfFailed(D3DX11SaveTextureToFileW(pd3d11Context.Get(), tex.Get(), D3DX11_IMAGE_FILE_FORMAT::D3DX11_IFF_BMP, L"D:\\d3d12.bmp"));
 }

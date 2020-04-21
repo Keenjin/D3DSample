@@ -31,7 +31,7 @@ void InitDevice(HWND hWnd)
     sd.BufferDesc.RefreshRate.Denominator = 1;
     sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     sd.OutputWindow = hWnd;
-    sd.SampleDesc.Count = 1;
+    sd.SampleDesc.Count = 2;
     sd.SampleDesc.Quality = 0;
     sd.Windowed = TRUE;
 
@@ -125,6 +125,8 @@ void Render()
         OnPrePresent();
 
         g_pSwapChain->Present(0, 0);
+
+        //OnPrePresent();
     }
 }
 
@@ -152,8 +154,6 @@ void OnPrePresent()
         DXGI_SWAP_CHAIN_DESC swapdesc;
         g_pSwapChain->GetDesc(&swapdesc);
 
-
-        // 创建一个CPU和GPU皆能访问的texture2D资源
         D3D11_TEXTURE2D_DESC desc = {};
         desc.Width = swapdesc.BufferDesc.Width;
         desc.Height = swapdesc.BufferDesc.Height;
@@ -161,12 +161,12 @@ void OnPrePresent()
         desc.MipLevels = 1;
         desc.ArraySize = 1;
         desc.SampleDesc.Count = 1;
-        desc.Usage = D3D11_USAGE_STAGING;
-        desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+        desc.Usage = D3D11_USAGE_DEFAULT;
 
         ID3D11Texture2D* tex = NULL;
         g_pd3dDevice->CreateTexture2D(&desc, nullptr, &tex);
-        g_pd3dImmediateContext->CopyResource(tex, pBackBuffer);
+        if (swapdesc.SampleDesc.Count > 1) g_pd3dImmediateContext->ResolveSubresource(tex, 0, pBackBuffer, 0, swapdesc.BufferDesc.Format);
+        else g_pd3dImmediateContext->CopyResource(tex, pBackBuffer);
 
         D3DX11SaveTextureToFileW(g_pd3dImmediateContext, tex, D3DX11_IMAGE_FILE_FORMAT::D3DX11_IFF_BMP, L"D:\\d3d11.bmp");
 
